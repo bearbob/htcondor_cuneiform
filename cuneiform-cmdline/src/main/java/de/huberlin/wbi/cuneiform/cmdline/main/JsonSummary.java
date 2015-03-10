@@ -1,5 +1,6 @@
 package de.huberlin.wbi.cuneiform.cmdline.main;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,10 @@ public class JsonSummary {
 	public String toString() {
 		
 		StringBuffer buf;
-		String first, s, r;
+		String s;
 		int i, n;
 		boolean res, comma;
+		Path candidate;
 		
 		buf = new StringBuffer();
 		
@@ -51,8 +53,6 @@ public class JsonSummary {
 		if( !output.isEmpty() ) {
 			
 			n = output.size();
-			first = output.get( 0 );
-			res = first.matches( "\\d+_\\d+_.+" );
 			comma = false;
 			
 			for( i = 0; i < n; i++ ) {
@@ -62,9 +62,12 @@ public class JsonSummary {
 				comma = true;
 				
 				s = output.get( i );
-				r = s.substring( 0, s.indexOf( '_' ) );
-				if( res )
-					s = buildDir.resolve( r ).resolve( s ).toString();
+				candidate = buildDir.resolve( s );
+
+				if( Files.exists( candidate ) ) {
+					s = candidate.toAbsolutePath().toString();
+					res = true;
+				}
 				
 				buf.append( '"' ).append( s ).append( '"' );
 			}
